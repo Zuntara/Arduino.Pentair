@@ -1,0 +1,41 @@
+# For information on keywords, see
+# http://arduino.cc/en/Hacking/LibraryTutorial
+# 
+# Each line has the name of the keyword,
+# followed by a tab (not spaces), 
+# followed by the kind of keyword. 
+# 
+# classes should be KEYWORD1 and are colored orange 
+# functions should be KEYWORD2 and will be brown
+
+###
+Pentair	KEYWORD1
+
+
+###
+ProcessIncommingSerialMessages	KEYWORD2
+PumpCommandSetPower	KEYWORD2
+PumpStatusCheck	KEYWORD2
+PumpCommandSaveSpeed	KEYWORD2
+PumpCommandRunProgram	KEYWORD2
+PumpCommandRunProgramForDuration	KEYWORD2
+PumpSaveAndRunProgramWithSpeedForDuration	KEYWORD2
+SetCallback	KEYWORD2
+
+###
+Pump	KEYWORD1
+
+###
+pump	KEYWORD2
+currentprogram	KEYWORD2
+remotecontrol	KEYWORD2
+power	KEYWORD2
+duration	KEYWORD2
+watts	KEYWORD2
+run	KEYWORD2
+mode	KEYWORD2
+drivestate	KEYWORD2
+rpm	KEYWORD2
+ppc	KEYWORD2
+err	KEYWORD2
+timer	KEYWORD2
