@@ -11,7 +11,38 @@ Arduino code for Pentair Intelliflo Wisperflo VSD
 I still need to test this on a real system, 
 my own pentair pump sends nothing over the RS485 wire, can someone confirm me how to connect it directly to the pump?
 
+Found that the RS485 pins are pin 6 and 7 of the pump connector which is the pin most to the bottom of the connector and the bottom-left one.
+
+This library is simplified to just control the pump(s) - no chrolinator etc. 
+
+Through the callback function you can submit the pump data to where-ever you want.
+
 ## Contribute
 
 Feel free to contribute to this library.
 
+## Usage
+
+Initialize the Pentair class and give the RX and TX pin numbers of your RS485 module.
+
+call ProcessIncommingSerialMessages()  in the loop() function to retrieve the bytes from the RS485 interface, 
+the library will then parse it and call the defined callback function (through 'SetCallback(PumpChanged)' for example)
+which will hold the pump information.
+
+Commands that are available:
+
+* void PumpStatusCheck(int index) = Request the pump status
+* bool PumpCommandSetPower(int index, bool power) = function to turn the pump on/off 
+* bool PumpCommandSaveSpeed(int index, int program, int speed) = function to save the program & speed
+* bool PumpCommandRunProgram(int index, int program) = function to run a program
+* bool PumpCommandRunProgramForDuration(int index, int program, int duration) = function to run a program for a specified duration
+* bool PumpSaveAndRunProgramWithSpeedForDuration(int index, int  program, int speed, int duration) = function to save and run a program with speed for a duration
+* void SetCallback(pump_callback callback) = method to call when a pump status has been changed.
+
+## Credits
+
+Credits to :
+
+* http://www.sdyoung.com/home/pool-status/how-i-control-the-pool/
+* https://github.com/dminear/easy-touch-raspberry-pi 
+* https://github.com/tagyoureit/nodejs-poolController
