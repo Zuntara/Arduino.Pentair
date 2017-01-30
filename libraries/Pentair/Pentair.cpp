@@ -1,5 +1,5 @@
 /*
-AdagioPro.cpp - Library for Pentair IntelliFlo.
+Pentair.cpp - Library for Pentair IntelliFlo.
 Created by Filip Slaets, January 23, 2017.
 */
 // For Arduino 1.0 and earlier
@@ -24,7 +24,7 @@ PumpHolder::PumpHolder() {
 	_currentPumpStatus[2].pump = 2;
 }
 PumpHolder::~PumpHolder() {
-	
+
 }
 void PumpHolder::pumpAck(LinkedList<byte> data, int dataLen, int pump, int counter) {
 	Serial.println("Responded with ACK");
@@ -210,7 +210,7 @@ Pentair::Pentair(int rxPin, int txPin) {
 	bufferToProcess = LinkedList<byte>();
 	chatter = LinkedList<byte>();
 
-	preambleStd[0] = 255;	preambleStd[1] = 165;	preambleChlorinator[0] = 16;
+	preambleStd[0] = 255;	preambleStd[1] = 165;	preambleChlorinator[0] = 16;
 	preambleChlorinator[1] = 2;
 }
 
@@ -234,7 +234,7 @@ void Pentair::ProcessIncommingSerialMessages() {
 	ReadIntoBuffer();
 	AnalyseCurrentBuffer();
 	if (breakLoop) {
-		if(debugLog) Serial.println("iOAOA: Exiting because breakLoop");
+		if (debugLog) Serial.println("iOAOA: Exiting because breakLoop");
 		return;
 	}
 	else if (bufferToProcess.size() > 0) {
@@ -326,7 +326,7 @@ void Pentair::AnalyseCurrentBuffer() {
 		if (debugLog) Serial.println(bufferToProcess.get(1), HEX);
 
 		if (preambleStd[0] == bufferToProcess.get(0) && preambleStd[1] == bufferToProcess.get(1)) {	 // match on pump or controller packet
-			// 0xFF 0xA5
+																									 // 0xFF 0xA5
 			if (debugLog) Serial.println("Possible match...");
 			int chatterlen = -1;
 			if (bufferToProcess.size() >= 7) {
@@ -366,7 +366,7 @@ void Pentair::AnalyseCurrentBuffer() {
 				}
 				if (debugLog) Serial.println("iOAOA: Copied chatter");
 				ShiftBuffer(chatterlen);	// remove chatter
-				//chatter = bufferToProcess.splice(0, chatterlen); //splice modifies the existing buffer.  We remove chatter from the bufferarray.
+											//chatter = bufferToProcess.splice(0, chatterlen); //splice modifies the existing buffer.  We remove chatter from the bufferarray.
 				if (debugLog) Serial.println("iOAOA: removed chatter from buffer");
 
 				if (((chatter.get(packetFields_DEST) == PUMP1 || chatter.get(packetFields_DEST) == PUMP2))
@@ -375,7 +375,7 @@ void Pentair::AnalyseCurrentBuffer() {
 				}
 				else {
 					packetType = ControllerPacket; //'controller';
-									//container.intellitouch.setPreambleByte(chatter[1]); //we dynamically adjust this based on what the controller is using.  It is also different for the pumps (should always be 0 for pump messages)
+												   //container.intellitouch.setPreambleByte(chatter[1]); //we dynamically adjust this based on what the controller is using.  It is also different for the pumps (should always be 0 for pump messages)
 				}
 				if (debugLog) Serial.println(F("Incomming packet ready for decoding"));
 				ProcessChecksum();
@@ -487,7 +487,7 @@ bool Pentair::ProcessPumpPacket() {
 	bool decoded = false;
 	Serial.print("Decoding a pump packet -> ");
 	Serial.println(chatter.get(packetFields_ACTION));
-	
+
 	switch (chatter.get(packetFields_ACTION)) {
 	case 1:	// Set speed setting
 		Process_pump_1();	// data, counter
@@ -587,8 +587,8 @@ void Pentair::Process_pump_1() {	// uses data and msgCounter
 		}
 	}
 	else if (chatter.get(pump_packetFields_CMD) == 2) {  // data[4]: 1== Response; 2==IntelliTouch; 3==Intellicom2(?)/manual
-													 //logger.verbose('Msg# %s   %s --> %s: Set Speed to %s rpm: %s', 
-													 //		counter, container.constants.ctrlString[data[container.constants.packetFields.FROM]], container.constants.ctrlString[data[container.constants.packetFields.DEST]], setAmount, JSON.stringify(data));
+														 //logger.verbose('Msg# %s   %s --> %s: Set Speed to %s rpm: %s', 
+														 //		counter, container.constants.ctrlString[data[container.constants.packetFields.FROM]], container.constants.ctrlString[data[container.constants.packetFields.DEST]], setAmount, JSON.stringify(data));
 		Serial.print("Msg#: Set Speed to ");
 		Serial.print(setAmount);
 		Serial.println(" rpm.");
@@ -760,7 +760,7 @@ void Pentair::SetCallback(pump_callback callback) {
 // Command helpers
 //set pump to remote control
 void Pentair::SetPumpToRemoteControl(int pump) {
-	byte remoteControlPacket[] = { 165, 0, pump, appAddress, 4, 1, 255 };
+	byte remoteControlPacket[] = { 0xA5, 0x00, pump, appAddress, 0x04, 0x01, 0xFF };
 	//if (container.settings.logApi) logger.verbose('Sending Set pump to remote control: %s', remoteControlPacket);
 	QueuePacket(remoteControlPacket, 7);
 }
@@ -816,7 +816,7 @@ void Pentair::SaveProgramOnPump(int pump, int program, int speed) {
 }
 //set pump to local control
 void Pentair::SetPumpToLocalControl(int pump) {
-	byte localControlPacket[] = { 165, 0, pump, appAddress, 4, 1, 0 };
+	byte localControlPacket[] = { 0xA5, 0x00, pump, appAddress, 0x04, 0x01, 0xFF };
 	//if (container.settings.logPumpMessages) logger.verbose('Sending Set pump to local control: %s', localControlPacket);
 	QueuePacket(localControlPacket, 7);
 }
@@ -846,7 +846,7 @@ void Pentair::RunProgram(int pump, int program) {
 
 //request pump status
 void Pentair::RequestPumpStatus(int pump) {
-	byte statusPacket[] = { 165, 0, pump, appAddress, 7, 0 };
+	byte statusPacket[] = { 0xA5, 0x00, pump, appAddress, 0x07, 0x00 };
 	//if (container.settings.logApi) logger.verbose('Sending Request Pump Status: %s', statusPacket);
 	QueuePacket(statusPacket, 6);
 }
@@ -1023,4 +1023,3 @@ void Pentair::QueuePacket(byte message[], int messageLength) {
 	}
 	delete(packet);
 }
-
