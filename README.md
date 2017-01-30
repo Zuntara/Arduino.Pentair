@@ -46,3 +46,4 @@ Credits to :
 * http://www.sdyoung.com/home/pool-status/how-i-control-the-pool/
 * https://github.com/dminear/easy-touch-raspberry-pi 
 * https://github.com/tagyoureit/nodejs-poolController
+* https://github.com/tagyoureit/nodejs-Pentair
