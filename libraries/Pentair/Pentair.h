@@ -1,7 +1,6 @@
-
 /*
-  AdagioPro.h - Library for Pentair IntelliFlo.
-  Created by Filip Slaets, January 23, 2017.
+AdagioPro.h - Library for Pentair IntelliFlo.
+Created by Filip Slaets, January 23, 2017.
 */
 #ifndef Pentair_h
 #define Pentair_h
@@ -9,8 +8,15 @@
 #include "SoftwareSerial.h"
 #include "LinkedList.h"
 
-#define appAddress 33
-#define CHLORINATOR 2 // constants.js
+/*
+0x0f: is the broadcast address, it is used by the more sophisticated controllers as in their system status broadcasts most likely to keep queries for system status low.
+0x1x: main controllers (IntelliComII, IntelliTouch, EasyTouch ...)
+0x2x: remote controllers
+0x6x: pumps, 0x60 is pump 1
+*/
+
+#define appAddress 0x10		// IntelliCommII 
+#define CHLORINATOR 2		// constants.js
 
 #define packetFields_DEST  2
 #define packetFields_FROM 3
@@ -95,7 +101,7 @@ class Pentair {
 private:
 	SoftwareSerial* _serial;
 	PumpHolder _pump;
-	
+
 	// Reading variables (RS485)
 	LinkedList<byte> bufferToProcess;
 	bool breakLoop = false;
@@ -183,9 +189,5 @@ private:
 	// queuePacket is a sending mechanism that add's checksum and preambles
 	void QueuePacket(byte message[], int messageLength);
 };
-
-
-
-
 
 #endif
