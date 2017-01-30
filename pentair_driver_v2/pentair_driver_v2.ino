@@ -45,3 +45,24 @@ void PumpChanged(Pump myPump) {
 	// Dim LED at pin A2
 	analogWrite(2, 0);
 }
+
+// Full Cyclic cycle
+// C: A500 d=60 s=10 c=04 l=01 FF       <0219> SETCTRL remote
+// P: A500 d=10 s=60 c=04 l=01 FF       <0219> CTRL is remote
+// C: A500 d=60 s=10 c=01 l=04 02E40012 <0212> WRITE (18) to 0x02e4
+// P: A500 d=10 s=60 c=01 l=02 0012 <012A>     VALIS (18)
+// C: A500 d=60 s=10 c=05 l=01 06       <0121> SETMOD 06 (Feature 1)
+// P: A500 d=10 s=60 c=05 l=01 06       <0121> MOD is 06
+// C: A500 d=60 s=10 c=06 l=01 0A       <0126> SETRUN 0a Started
+// P: A500 d=10 s=60 c=06 l=01 0A       <0126> RUN is 0a Started
+// C: A500 d=60 s=10 c=07 l=00          <011C> SEND status
+// P: A500 d=10 s=60 c=07 l=0f 0A0602024908B1120000000A000F22 <028E>
+
+// If the controller releases the pump the cyclic sequence changes to:
+
+// C: A500 d=60 s=10 c=04 l=01 00 <011A> SETCTRL local
+// P: A500 d=10 s=60 c=04 l=01 00 <011A> CTRL is local
+
+void DoCycleTest(){
+	pentair->PumpStatusCheck(1);
+}
