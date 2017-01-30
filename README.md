@@ -4,7 +4,7 @@ Arduino code for Pentair Intelliflo Wisperflo VSD
 ## How to install
 * Copy the contents of the libraries folder to your Arduino folder under and merge with the existing libraries folder.
 * Copy the pentair_driver_v2 to the arduino folder
-* Open the .ino file from the pentair_driver_v2 folder in your Arduino IDE
+* Open the .ino file from the pentair_driver_v2 folder in your Arduino IDE (you can remove the calls to the analogWrite)
 
 ## Notes
 
@@ -20,6 +20,8 @@ Through the callback function you can submit the pump data to where-ever you wan
 ## Contribute
 
 Feel free to contribute to this library.
+
+You may create pull requests for other commands to the pump, I also need to create an interface to communicate with a phone or app on the desktop over bluetooth or a network.
 
 ## Usage
 
