@@ -1,43 +1,47 @@
 #include "Pentair.h"
 
-Pentair pentair(6, 7);
+// Create our pentair instance
+Pentair pentair(6, 7);		// RX, TX pins for RS-485 (shield)
 
 void setup() {
-  Serial.begin(115200);
+	// Initialize some debug output
+	Serial.begin(115200);
+	
+	// set a callback method for when a pump status changes
+	pentair.SetCallback(PumpChanged);
+	// indicate to do some debug logging on the serial bus
+	pentair.debugLog = true;
 
-  pentair.SetCallback(PumpChanged);
-
-  pentair.debugLog = true;
-
-  pentair.PumpCommandSetPower(1, true);
-/*
-  pentair.PumpCommandSetPower(1, false);
-  delay(1000);
-  pentair.PumpCommandSetPower(1, true);
-  delay(1000);
-  pentair.PumpStatusCheck(1);
-  delay(1000);
-*/
-analogWrite(3, 255);
+	// Tell the pump to startup
+	pentair.PumpCommandSetPower(1, true);
+	
+	// Just tell a locally attached LED at pin A3 to light up
+	analogWrite(3, 255);
 }
 
 void loop() {
-  analogWrite(5, 255);
-  // Inspect the bus on incomming messages
-  pentair.ProcessIncommingSerialMessages();
+	// Light up a LED on pin A5
+	analogWrite(5, 255);
+	
+	// Inspect the bus for incomming messages and process them
+	pentair.ProcessIncommingSerialMessages();
 
-// pentair.PumpCommandSetPower(1, false);
-  // Ask pump status
-  //pentair.PumpStatusCheck(1);
-  analogWrite(5, 0);
-  delay(500);
+	// Dim the led at pin A5
+	analogWrite(5, 0);
+	
+	// Wait a little bit
+	delay(500);
 }
 
+// Gets called when there is a change in attributes on the given pump
 void PumpChanged(Pump myPump) {
-  analogWrite(2, 255);
-  Serial.print("Pump ");
-  Serial.print(myPump.pump);
-  Serial.println(" has been changed.");
-  delay(500);
-  analogWrite(2, 0);
+	// Light up a LED on pin A2
+	analogWrite(2, 255);
+	
+	Serial.print("Pump "); Serial.print(myPump.pump); Serial.println(" has been changed.");
+	
+	delay(500);
+	
+	// Dim LED at pin A2
+	analogWrite(2, 0);
 }
