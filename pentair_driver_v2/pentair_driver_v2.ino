@@ -64,5 +64,5 @@ void PumpChanged(Pump myPump) {
 // P: A500 d=10 s=60 c=04 l=01 00 <011A> CTRL is local
 
 void DoCycleTest(){
-	pentair->PumpStatusCheck(1);
+	pentair.PumpStatusCheck(1); // set to remote, ask status of pump 1, set back to local
 }
