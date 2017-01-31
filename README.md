@@ -10,10 +10,12 @@ Arduino code for Pentair Intelliflo Wisperflo VSD
 
 I still need to test this on a real system, 
 my own pentair pump sends nothing over the RS485 wire, can someone confirm me how to connect it directly to the pump?
+- Updated in the meanwhile with issue [Figure out the connection to the intelliflo vsd pump](https://github.com/Zuntara/Arduino.Pentair/issues/1) > the pump start talking when you identified the program as being a valid controller, it also requires a cyclic communication.
 
-Found that the RS485 pins are pin 6 and 7 of the pump connector which is the pin most to the bottom of the connector and the bottom-left one.
+Found that the RS-485 pins are pin 6 and 7 of the pump connector. 
+Which is the most-bottom pin of the connector and the most-bottom-left one.
 
-This library is simplified to just control the pump(s) - no chrolinator etc. 
+This library is simplified to just control the pump(s) - no chlorinator etc. 
 
 Through the callback function you can submit the pump data to where-ever you want.
 
