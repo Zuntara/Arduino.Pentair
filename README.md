@@ -43,14 +43,27 @@ I also need to create an interface to communicate with a phone or app on the des
 
 Initialize the Pentair class and give the RX and TX pin numbers of your RS485 module (I have the RS-485 Shield from linksprite).
 
+	// Create our pentair instance
+	Pentair pentair(6, 7);		// RX, TX pins for RS-485 (shield)
+
 Call *ProcessIncommingSerialMessages()*  in the *loop()* function to retrieve the bytes from the RS485 interface, 
 the library will then parse it and call the defined callback function (through '*SetCallback(PumpChanged)*' for example)
 which will hold all pump information.
+
+	void loop() {
+		// Inspect the bus for incomming messages and process them
+		pentair.ProcessIncommingSerialMessages();
+
+		// Wait a little bit (this can be removed i guess)
+		delay(20);
+	}
 
 Commands that are available:
 
     // Request the pump status
     void PumpStatusCheck(int index) 
+    
+    ##
     
     // Turn the pump on/off
     bool PumpCommandSetPower(int index, bool power) 
@@ -77,3 +90,13 @@ Credits to :
 * http://www.sdyoung.com/home/pool-status/how-i-control-the-pool/
 * https://github.com/dminear/easy-touch-raspberry-pi 
 * https://github.com/tagyoureit/nodejs-poolController
+
+for giving my enough information to figure out what the pump needs.
+
+## Roadmap
+
+[ ] Test with a real pump (ongoing)
+[ ] Add remote control via app
+[ ] Integrate Hanna Instruments BL121 controller interaction (for Cl, Ph and Temp readings)
+[ ] Add metrics on the whole system for guarding purposes (Ph levels, Cl levels, temp range, flow control, ...)
+[ ] Make sure everything is pluggable, not everyone has the same system
