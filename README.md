@@ -1,5 +1,5 @@
 # Arduino.Pentair
-Arduino code for Pentair Intelliflo Wisperflo VSD
+Arduino code for Pentair Intelliflo Wisperflo VS(D)
 
 ## How to install
 * Copy the contents of the libraries folder to your Arduino folder under and merge with the existing libraries folder.
@@ -10,7 +10,7 @@ Arduino code for Pentair Intelliflo Wisperflo VSD
 
 I still need to test this on a real system, 
 my own pentair pump sends nothing over the RS485 wire, can someone confirm me how to connect it directly to the pump?
-- Updated in the meanwhile with issue [Figure out the connection to the intelliflo vsd pump](https://github.com/Zuntara/Arduino.Pentair/issues/1) > the pump start talking when you identified the program as being a valid controller, it also requires a cyclic communication.
+- Updated in the meanwhile with issue [Figure out the connection to the intelliflo vsd pump](https://github.com/Zuntara/Arduino.Pentair/issues/1) > the pump starts talking when you identified the program as being a valid controller, it also requires a cyclic communication.
 
 Found that the RS-485 pins are pin 6 and 7 of the pump connector. 
 Which is the most-bottom pin of the connector and the most-bottom-left one.
@@ -19,19 +19,33 @@ This library is simplified to just control the pump(s) - no chlorinator etc.
 
 Through the callback function you can submit the pump data to where-ever you want.
 
+    // set a callback method for when a pump status changes
+	pentair.SetCallback(OnPumpChanged);
+    
+    // Gets called when there is a change in attributes on the given pump
+    void OnPumpChanged(Pump myPump) {
+	   	
+	    Serial.print("Pump "); Serial.print(myPump.pump); Serial.println(" has been changed.");
+	    Serial.print("RPM: "); Serial.print(myPump.rpm); Serial.println(" is reported.");
+	    
+        // Call a HTTP client or send it over TCP/UDP to somewhere if you like....
+        
+    }
+
 ## Contribute
 
 Feel free to contribute to this library.
 
-You may create pull requests for other commands to the pump, I also need to create an interface to communicate with a phone or app on the desktop over bluetooth or a network.
+You may create pull requests for other commands to the pump (if I've missed some), 
+I also need to create an interface to communicate with a phone or app on the desktop over bluetooth or a network.
 
 ## Usage
 
-Initialize the Pentair class and give the RX and TX pin numbers of your RS485 module.
+Initialize the Pentair class and give the RX and TX pin numbers of your RS485 module (I have the RS-485 Shield from linksprite).
 
-call ProcessIncommingSerialMessages()  in the loop() function to retrieve the bytes from the RS485 interface, 
-the library will then parse it and call the defined callback function (through 'SetCallback(PumpChanged)' for example)
-which will hold the pump information.
+Call *ProcessIncommingSerialMessages()*  in the *loop()* function to retrieve the bytes from the RS485 interface, 
+the library will then parse it and call the defined callback function (through '*SetCallback(PumpChanged)*' for example)
+which will hold all pump information.
 
 Commands that are available:
 
@@ -63,4 +77,3 @@ Credits to :
 * http://www.sdyoung.com/home/pool-status/how-i-control-the-pool/
 * https://github.com/dminear/easy-touch-raspberry-pi 
 * https://github.com/tagyoureit/nodejs-poolController
-* https://github.com/tagyoureit/nodejs-Pentair
