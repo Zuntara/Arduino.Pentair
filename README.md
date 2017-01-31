@@ -35,13 +35,26 @@ which will hold the pump information.
 
 Commands that are available:
 
-* void PumpStatusCheck(int index) = Request the pump status
-* bool PumpCommandSetPower(int index, bool power) = function to turn the pump on/off 
-* bool PumpCommandSaveSpeed(int index, int program, int speed) = function to save the program & speed
-* bool PumpCommandRunProgram(int index, int program) = function to run a program
-* bool PumpCommandRunProgramForDuration(int index, int program, int duration) = function to run a program for a specified duration
-* bool PumpSaveAndRunProgramWithSpeedForDuration(int index, int  program, int speed, int duration) = function to save and run a program with speed for a duration
-* void SetCallback(pump_callback callback) = method to call when a pump status has been changed.
+    // Request the pump status
+    void PumpStatusCheck(int index) 
+    
+    // Turn the pump on/off
+    bool PumpCommandSetPower(int index, bool power) 
+    
+    // Save the program & speed
+    bool PumpCommandSaveSpeed(int index, int program, int speed)
+    
+    // Rrun a fixed preset program
+    bool PumpCommandRunProgram(int index, int program)
+    
+    // Run a program for a specified duration
+    bool PumpCommandRunProgramForDuration(int index, int program, int duration)
+    
+    // Save and run a program with speed for a duration
+    bool PumpSaveAndRunProgramWithSpeedForDuration(int index, int  program, int speed, int duration) 
+    
+    // callback when a pump status has been changed.
+    void SetCallback(pump_callback callback) 
 
 ## Credits
 
