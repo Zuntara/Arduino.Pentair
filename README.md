@@ -1,16 +1,21 @@
 # Arduino.Pentair
-Arduino code for Pentair Intelliflo Wisperflo VS(D)
+Arduino code for: 
+* Pentair Intelliflo Wisperflo VS(D)
+* Hanna Instruments BL121 Pool Controller
 
 ## How to install
 * Copy the contents of the libraries folder to your Arduino folder under and merge with the existing libraries folder.
-* Copy the pentair_driver_v2 to the arduino folder
-* Open the .ino file from the pentair_driver_v2 folder in your Arduino IDE (you can remove the calls to the analogWrite)
+* Copy the pentair_test to the arduino folder
+* Open the .ino file from the pentair_test folder in your Arduino IDE (you can remove the calls to the analogWrite)
+* The same procedure counts for the HannaBL121_xx folder.
 
 ## Notes
 
-I still need to test this on a real system, 
-my own pentair pump sends nothing over the RS485 wire, can someone confirm me how to connect it directly to the pump?
-- Updated in the meanwhile with issue [Figure out the connection to the intelliflo vsd pump](https://github.com/Zuntara/Arduino.Pentair/issues/1) > the pump starts talking when you identified the program as being a valid controller, it also requires a cyclic communication.
+### Pentair Pump
+
+I still need to test the pentair code on a real system (ongoing), 
+my own pentair pump sends nothing over the RS485 wire at this moment, recorded this fact in an issue:
+- [Figure out the connection to the intelliflo vsd pump](https://github.com/Zuntara/Arduino.Pentair/issues/1) > the pump starts talking when you identified the program as being a valid controller, it also requires a cyclic communication.
 
 Found that the RS-485 pins are pin 6 and 7 of the pump connector. 
 Which is the most-bottom pin of the connector and the most-bottom-left one.
@@ -31,6 +36,14 @@ Through the callback function you can submit the pump data to where-ever you wan
         // Call a HTTP client or send it over TCP/UDP to somewhere if you like....
         
     }
+
+### Hanna BL121 Pool controller
+
+The mappings need to be checked (requires configuration at pool controller as well as on the Arduino)
+
+For this to work you'll need a couple of relays and resistors to make sure the communication is correct.
+
+You will also need contactless liquid sensors (ordered mine on DFRobot) my system pull's the Cl and Ph from two barells.
 
 ## Contribute
 
@@ -97,6 +110,6 @@ for giving my enough information to figure out what the pump needs.
 
 - [ ] Test with a real pump (ongoing)
 - [ ] Add remote control via app
-- [ ] Integrate Hanna Instruments BL121 controller interaction (for Cl, Ph and Temp readings)
+- [ ] Integrate Hanna Instruments BL121 controller interaction (for Cl, Ph and Temp readings) - ongoing
 - [ ] Add metrics on the whole system for guarding purposes (Ph levels, Cl levels, temp range, flow control, ...)
 - [ ] Make sure everything is pluggable, not everyone has the same system
