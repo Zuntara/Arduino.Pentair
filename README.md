@@ -110,6 +110,6 @@ for giving my enough information to figure out what the pump needs.
 
 - [ ] Test with a real pump (ongoing)
 - [ ] Add remote control via app
-- [ ] Integrate Hanna Instruments BL121 controller interaction (for Cl, Ph and Temp readings) - ongoing
+- [X] Integrate Hanna Instruments BL121 controller interaction (for Cl, Ph and Temp readings) - ongoing
 - [ ] Add metrics on the whole system for guarding purposes (Ph levels, Cl levels, temp range, flow control, ...)
 - [ ] Make sure everything is pluggable, not everyone has the same system
