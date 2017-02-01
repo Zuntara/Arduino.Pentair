@@ -48,6 +48,7 @@ public:
 
 	void Update();
 	BL121Status GetStatus();
+	void TriggerFlowSwitch(bool holdInjection);
 
 private:
 	bool IsFaultyState();

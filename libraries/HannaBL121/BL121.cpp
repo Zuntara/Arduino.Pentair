@@ -67,6 +67,16 @@ void BL121::Update() {
 	}
 }
 
+void BL121::TriggerFlowSwitch(bool holdInjection) {
+	// Set the output high for triggering a flowswitch (or low when releasing it)
+	if (holdInjection) {
+		digitalWrite(_alarmPin, HIGH);
+	}
+	else {
+		digitalWrite(_alarmPin, LOW);
+	}
+}
+
 bool BL121::IsFaultyState() {
 	return _status.HasAlarm
 		|| _status.ClLevel < 600 || _status.ClLevel > 800
