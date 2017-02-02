@@ -43,8 +43,12 @@ I also need to create an interface to communicate with a phone or app on the des
 
 Initialize the Pentair class and give the RX and TX pin numbers of your RS485 module (I have the RS-485 Shield from linksprite).
 
-	// Create our pentair instance
+	// Create our pentair instance with SoftwareSerial
 	Pentair pentair(6, 7);		// RX, TX pins for RS-485 (shield)
+	
+	// Create our pentair instance with a HardwareSerial
+	Serial1 _serial1;
+	Pentair pentair(&_serial1);		// pass the address of the hardware serial
 
 Call *ProcessIncommingSerialMessages()*  in the *loop()* function to retrieve the bytes from the RS485 interface, 
 the library will then parse it and call the defined callback function (through '*SetCallback(PumpChanged)*' for example)
