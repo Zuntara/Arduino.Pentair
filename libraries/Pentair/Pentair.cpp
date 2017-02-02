@@ -10,7 +10,7 @@ Created by Filip Slaets, January 23, 2017.
 #endif
 
 #include "Pentair.h"
-#include "Stream.h"
+#include "HardwareSerial.h"
 #include "SoftwareSerial.h"
 #include "LinkedList.h"
 
@@ -205,9 +205,22 @@ void PumpHolder::setCallback(pump_callback callback) {
 //*******************************************************************************//
 // Pentair methods
 //*******************************************************************************//
+Pentair::Pentair(HardwareSerial& serial) :
+	_serial(serial)
+{
+	serial.begin(9600);
+	bufferToProcess = LinkedList<byte>();
+	chatter = LinkedList<byte>();
+
+	preambleStd[0] = 255;
+	preambleStd[1] = 165;
+	preambleChlorinator[0] = 16;
+	preambleChlorinator[1] = 2;
+}
+
 Pentair::Pentair(int rxPin, int txPin) {
-	_serial = new SoftwareSerial(rxPin, txPin);
-	_serial->begin(9600);
+	_serial = SoftwareSerial(rxPin, txPin);
+	((SoftwareSerial&)_serial).begin(9600);
 	bufferToProcess = LinkedList<byte>();
 	chatter = LinkedList<byte>();
 
@@ -217,18 +230,7 @@ Pentair::Pentair(int rxPin, int txPin) {
 	preambleChlorinator[1] = 2;
 }
 
-Pentair::Pentair(Stream& serial))
-	_serial(serial)  // Need to initialise references before body
-{
-	_serial->begin(9600);
-	bufferToProcess = LinkedList<byte>();
-	chatter = LinkedList<byte>();
 
-	preambleStd[0] = 255;
-	preambleStd[1] = 165;
-	preambleChlorinator[0] = 16;
-	preambleChlorinator[1] = 2;
-}
 
 //*******************************************************************************//
 // Reading the RS485 Bus
@@ -270,11 +272,11 @@ void Pentair::ProcessIncommingSerialMessages() {
 }
 
 void Pentair::ReadIntoBuffer() {
-	if (_serial->available() > 0) {
+	if (_serial.available() > 0) {
 		analogWrite(4, 255);
-		int len = _serial->available();
+		int len = _serial.available();
 		for (int i = 0; i < len; i++) {
-			bufferToProcess.add(_serial->read());
+			bufferToProcess.add(_serial.read());
 		}
 		analogWrite(4, 0);
 	}
@@ -1025,7 +1027,7 @@ void Pentair::QueuePacket(byte message[], int messageLength) {
 	}
 	else {
 		// send packet out
-		_serial->write(packet, packetSize);
+		_serial.write(packet, packetSize);
 		delay(100);
 		//pump packet
 		if (packet[packetFields_DEST + 3] == PUMP1 || packet[packetFields_DEST + 3] == PUMP2) {

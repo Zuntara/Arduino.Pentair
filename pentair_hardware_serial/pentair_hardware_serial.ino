@@ -1,8 +1,9 @@
 #include "Pentair.h"
+#include "HardwareSerial.h"
 
 // Create our pentair instance
-Serial1 _serial1;
-Pentair pentair(&_serial1);		// Hardware serial for communication
+
+Pentair pentair(Serial1);		// Hardware serial for communication
 
 void setup() {
 	// Initialize some debug output

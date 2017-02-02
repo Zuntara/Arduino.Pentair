@@ -5,7 +5,7 @@ Created by Filip Slaets, January 23, 2017.
 #ifndef Pentair_h
 #define Pentair_h
 
-#include "Stream.h"
+#include "HardwareSerial.h"
 #include "LinkedList.h"
 
 /*
@@ -119,7 +119,7 @@ public:
 public:
 	// Constructors
 	Pentair(int rxPin, int txPin);
-	Pentair(Stream& serial);
+	Pentair(HardwareSerial& serial);
 
 	// Read the RS bus for new messages and decode them.
 	void ProcessIncommingSerialMessages();
