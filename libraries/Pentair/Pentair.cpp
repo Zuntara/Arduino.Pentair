@@ -10,8 +10,9 @@ Created by Filip Slaets, January 23, 2017.
 #endif
 
 #include "Pentair.h"
+#include "Stream.h"
 #include "SoftwareSerial.h"
-#include "../LinkedList/LinkedList.h"
+#include "LinkedList.h"
 
 
 
@@ -210,10 +211,24 @@ Pentair::Pentair(int rxPin, int txPin) {
 	bufferToProcess = LinkedList<byte>();
 	chatter = LinkedList<byte>();
 
-	preambleStd[0] = 255;	preambleStd[1] = 165;	preambleChlorinator[0] = 16;
+	preambleStd[0] = 255;	
+	preambleStd[1] = 165;	
+	preambleChlorinator[0] = 16;
 	preambleChlorinator[1] = 2;
 }
 
+Pentair::Pentair(Stream& serial))
+	_serial(serial)  // Need to initialise references before body
+{
+	_serial->begin(9600);
+	bufferToProcess = LinkedList<byte>();
+	chatter = LinkedList<byte>();
+
+	preambleStd[0] = 255;
+	preambleStd[1] = 165;
+	preambleChlorinator[0] = 16;
+	preambleChlorinator[1] = 2;
+}
 
 //*******************************************************************************//
 // Reading the RS485 Bus

@@ -5,7 +5,7 @@ Created by Filip Slaets, January 23, 2017.
 #ifndef Pentair_h
 #define Pentair_h
 
-#include "SoftwareSerial.h"
+#include "Stream.h"
 #include "LinkedList.h"
 
 /*
@@ -99,7 +99,7 @@ public:
 // Class that will handle Pentair shizzle
 class Pentair {
 private:
-	SoftwareSerial* _serial;
+	Stream& _serial;
 	PumpHolder _pump;
 
 	// Reading variables (RS485)
@@ -117,8 +117,9 @@ private:
 public:
 	bool debugLog = false;
 public:
-	// Constructor
+	// Constructors
 	Pentair(int rxPin, int txPin);
+	Pentair(Stream& serial);
 
 	// Read the RS bus for new messages and decode them.
 	void ProcessIncommingSerialMessages();
