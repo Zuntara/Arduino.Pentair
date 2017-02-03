@@ -1,20 +1,30 @@
 #include "Pentair.h"
+#include "SoftwareSerial.h"
 
 // Create our pentair instance
 Pentair pentair(6, 7);		// RX, TX pins for RS-485 (shield)
 
 void setup() {
+  analogWrite(3, 0);
 	// Initialize some debug output
 	Serial.begin(115200);
-	
+	Serial.println("Initializing...");
+
 	// set a callback method for when a pump status changes
 	pentair.SetCallback(PumpChanged);
 	// indicate to do some debug logging on the serial bus
 	pentair.debugLog = true;
 
+  delay(500);
+  analogWrite(3, 50);
 	// Tell the pump to startup
-	pentair.PumpCommandSetPower(1, true);
-	
+	pentair.PumpCommandSetPower(1, false);
+  analogWrite(3, 100);
+	delay(1000);
+  analogWrite(3, 150);
+  // Tell the pump to startup
+  pentair.PumpCommandSetPower(1, true);
+
 	// Just tell a locally attached LED at pin A3 to light up
 	analogWrite(3, 255);
 }
@@ -31,6 +41,10 @@ void loop() {
 	
 	// Wait a little bit
 	delay(500);
+analogWrite(4, 255);
+  pentair.PumpStatusCheck(1);
+analogWrite(4, 0);
+  delay(500);
 }
 
 // Gets called when there is a change in attributes on the given pump
@@ -62,7 +76,8 @@ void PumpChanged(Pump myPump) {
 
 // C: A500 d=60 s=10 c=04 l=01 00 <011A> SETCTRL local
 // P: A500 d=10 s=60 c=04 l=01 00 <011A> CTRL is local
-
+/*
 void DoCycleTest(){
 	pentair.PumpStatusCheck(1); // set to remote, ask status of pump 1, set back to local
 }
+*/

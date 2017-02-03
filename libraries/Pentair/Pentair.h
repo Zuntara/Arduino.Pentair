@@ -5,6 +5,7 @@ Created by Filip Slaets, January 23, 2017.
 #ifndef Pentair_h
 #define Pentair_h
 
+#include "SoftwareSerial.h"
 #include "HardwareSerial.h"
 #include "LinkedList.h"
 
@@ -99,7 +100,9 @@ public:
 // Class that will handle Pentair shizzle
 class Pentair {
 private:
-	Stream& _serial;
+	SoftwareSerial* _softSerial;
+	HardwareSerial& _hardSerial;
+	bool _hardwareMode;
 	PumpHolder _pump;
 
 	// Reading variables (RS485)

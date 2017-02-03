@@ -205,10 +205,11 @@ void PumpHolder::setCallback(pump_callback callback) {
 //*******************************************************************************//
 // Pentair methods
 //*******************************************************************************//
-Pentair::Pentair(HardwareSerial& serial) :
-	_serial(serial)
+Pentair::Pentair(HardwareSerial& hserial) :
+	_hardSerial(hserial)
 {
-	serial.begin(9600);
+	_hardwareMode = true;
+	_hardSerial.begin(9600);
 	bufferToProcess = LinkedList<byte>();
 	chatter = LinkedList<byte>();
 
@@ -219,8 +220,10 @@ Pentair::Pentair(HardwareSerial& serial) :
 }
 
 Pentair::Pentair(int rxPin, int txPin) {
-	_serial = SoftwareSerial(rxPin, txPin);
-	((SoftwareSerial&)_serial).begin(9600);
+	_hardwareMode = false;
+	_softSerial = new SoftwareSerial(rxPin, txPin);
+	_softSerial->begin(9600);
+	
 	bufferToProcess = LinkedList<byte>();
 	chatter = LinkedList<byte>();
 
@@ -229,8 +232,6 @@ Pentair::Pentair(int rxPin, int txPin) {
 	preambleChlorinator[0] = 16;
 	preambleChlorinator[1] = 2;
 }
-
-
 
 //*******************************************************************************//
 // Reading the RS485 Bus
@@ -272,17 +273,33 @@ void Pentair::ProcessIncommingSerialMessages() {
 }
 
 void Pentair::ReadIntoBuffer() {
-	if (_serial.available() > 0) {
-		analogWrite(4, 255);
-		int len = _serial.available();
+	int available = 0;
+	if (_hardwareMode) {
+		available = _hardSerial.available();
+	}
+	else {
+		available = _softSerial->available();
+	}
+
+	if (available > 0) {
+		analogWrite(2, 255);
+		int len = available;
 		for (int i = 0; i < len; i++) {
-			bufferToProcess.add(_serial.read());
+			byte r = 0;
+			if (_hardwareMode) {
+				r = _hardSerial.read();
+			}
+			else {
+				r = _softSerial->read();
+			}
+			bufferToProcess.add(r);
 		}
-		analogWrite(4, 0);
+		analogWrite(2, 0);
 	}
 	else {
 		return;
 		if (bufferToProcess.size() == 0) {
+			analogWrite(2, 255);
 			bufferToProcess = LinkedList<byte>();
 			//   PACKET FORMAT    <------------------NOISE---------------->  <------PREAMBLE------>  Sub   Dest  Src   CFI   Len   Dat1  Dat2  ChkH  ChkL     //Checksum is sum of bytes A5 thru Dat2.
 			// byte poolOn[] =    {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0xA5, 0x07, 0x10, 0x20, 0x86, 0x02, 0x06, 0x01, 0x01, 0x6B };
@@ -329,6 +346,7 @@ void Pentair::ReadIntoBuffer() {
 			}
 
 			Serial.print("Added "); Serial.print(bufferToProcess.size()); Serial.println(" bytes.");
+			analogWrite(2, 0);
 		}
 		delay(2000);
 	}
@@ -777,12 +795,14 @@ void Pentair::SetCallback(pump_callback callback) {
 // Command helpers
 //set pump to remote control
 void Pentair::SetPumpToRemoteControl(int pump) {
+	Serial.println(F("Going to remote control"));
 	byte remoteControlPacket[] = { 0xA5, 0x00, pump, appAddress, 0x04, 0x01, 0xFF };
 	//if (container.settings.logApi) logger.verbose('Sending Set pump to remote control: %s', remoteControlPacket);
 	QueuePacket(remoteControlPacket, 7);
 }
 //turn pump on/off
 void Pentair::SendPumpPowerPacket(int pump, bool power) {
+	Serial.println(F("Sending power packet"));
 	int index = PumpAddressToIndex(pump);
 	byte setPrg_[3];
 	//if (container.settings.logApi) logger.info('User request to set pump %s to %s', pump, power);
@@ -833,6 +853,7 @@ void Pentair::SaveProgramOnPump(int pump, int program, int speed) {
 }
 //set pump to local control
 void Pentair::SetPumpToLocalControl(int pump) {
+	Serial.println(F("Going to local control"));
 	byte localControlPacket[] = { 0xA5, 0x00, pump, appAddress, 0x04, 0x01, 0xFF };
 	//if (container.settings.logPumpMessages) logger.verbose('Sending Set pump to local control: %s', localControlPacket);
 	QueuePacket(localControlPacket, 7);
@@ -840,7 +861,7 @@ void Pentair::SetPumpToLocalControl(int pump) {
 //generic functions that ends the commands to the pump by setting control to local and requesting the status
 void Pentair::EndPumpCommand(int pump) {
 	SetPumpToLocalControl(pump);
-	RequestPumpStatus(pump);
+	//RequestPumpStatus(pump);
 	// if (container.settings.logApi) logger.info('End of Sending Pump Packet \n \n');
 
 	//container.io.emitToClients('pump');
@@ -863,6 +884,7 @@ void Pentair::RunProgram(int pump, int program) {
 
 //request pump status
 void Pentair::RequestPumpStatus(int pump) {
+	Serial.println(F("Requesting pump status"));
 	byte statusPacket[] = { 0xA5, 0x00, pump, appAddress, 0x07, 0x00 };
 	//if (container.settings.logApi) logger.verbose('Sending Request Pump Status: %s', statusPacket);
 	QueuePacket(statusPacket, 6);
@@ -939,12 +961,12 @@ void Pentair::JoinArray(byte array1[], byte array2[], byte dest[]) {
 // https://github.com/tagyoureit/nodejs-poolController/blob/master/lib/comms/outbound/queue-packet.js
 // queuePacket is a sending mechanism that add's checksum and preambles
 void Pentair::QueuePacket(byte message[], int messageLength) {
-	if (debugLog) Serial.println("queuePacket: Adding checksum and validating packet to be written ");
+	if (debugLog) Serial.println(F("queuePacket: Adding checksum and validating packet to be written "));
 	//Serial.println(message);
 
-	if (debugLog) Serial.print("queuePacket: message length: ");
+	if (debugLog) Serial.print(F("queuePacket: message length: "));
 	if (debugLog) Serial.println(messageLength);
-
+	
 	//int response = [];
 
 	int checksum = 0;
@@ -987,7 +1009,7 @@ void Pentair::QueuePacket(byte message[], int messageLength) {
 		}
 
 		//if we request to "SET" a variable on the HEAT STATUS
-		if (packet[7] == 136 && /*s.intellitouch*/ false) {
+		if (packetSize >= 8 && packet[7] == 136 && /*s.intellitouch*/ false) {
 			requestGet = 1;
 		}
 	}
@@ -1027,7 +1049,13 @@ void Pentair::QueuePacket(byte message[], int messageLength) {
 	}
 	else {
 		// send packet out
-		_serial.write(packet, packetSize);
+		if (_hardwareMode) {
+			_hardSerial.write(packet, packetSize);
+		}
+		else {
+			_softSerial->write(packet, packetSize);
+		}
+		
 		delay(100);
 		//pump packet
 		if (packet[packetFields_DEST + 3] == PUMP1 || packet[packetFields_DEST + 3] == PUMP2) {
